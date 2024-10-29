@@ -57,16 +57,9 @@ jobs:
         run: pnpm run check-types
 
       - name: Run unit tests
-        run: pnpm run test -- --coverage
+        run: pnpm run test --coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 7
