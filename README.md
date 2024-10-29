@@ -36,39 +36,41 @@ The folder structure of the Crux App is organized as follows:
 
 ```
 crux-app/
-├── public/                # Static files
-├── src/                   # Source files
-│   ├── components/        # Reusable components
-│   ├── pages/             # Next.js pages
-│   ├── styles/            # Global styles
-│   └── lib/               # Library functions and utilities
-├── .husky/                # Husky hooks for Git
-├── .eslintrc.js           # ESLint configuration
-├── .prettierrc            # Prettier configuration
-├── package.json           # Project metadata and scripts
-└── tsconfig.json          # TypeScript configuration
+├── .github/workflows/      # CI/CD workflows
+│   ├── CI.yml
+│   ├── release.yml
+│   └── update-deps.yml
+├── src/                    # Source code
+│   ├── app/               # App pages and routing
+│   ├── components/        # Reusable UI components
+│   ├── context/          # React context providers
+│   ├── lib/              # Utilities and helpers
+│   ├── lotties/          # Lottie animation files
+│   ├── styles/           # Global styles
+│   ├── tests/            # Test files
+│   └── validations/      # Form and data validations
+├── public/               # Static assets
+└── pre-commit/          # Pre-commit hooks
 ```
-
-## Husky Setup
-
-Husky is used to manage Git hooks in this project. It helps enforce code quality by running scripts before commits and pushes.
-
-### Configuration
-
-Husky is configured in the `.husky/` directory. You can find hooks for pre-commit and pre-push actions, which typically include linting and testing commands to ensure code quality.
-
-To add or modify hooks, you can use the following command:
-
-```bash
-pnpx husky add .husky/pre-commit "pnpm run lint"
-```
-
-This command sets up a pre-commit hook that runs the linting script before allowing a commit.
 
 ## Relevant Config Files
 
-- **.eslintrc.js**: Configuration file for ESLint, which helps maintain code quality and consistency.
-- **.prettierrc**: Configuration file for Prettier, which formats code according to specified rules.
-- **tsconfig.json**: TypeScript configuration file that defines the compiler options and project structure.
+├── .husky/               # Git hooks configuration
+├── .next/                # Next.js build output
+├── .vscode/             # VS Code settings
+├── .env.local           # Local environment variables
+├── .eslintrc.json       # ESLint configuration
+├── .gitignore           # Git ignore rules
+├── codecov.yml          # Codecov configuration
+├── commitlint.config.ts # Commit message linting
+├── eslint.config.mjs    # ESLint module config
+├── lint-staged.config.js # Lint-staged configuration
+├── next.config.mjs      # Next.js configuration
+├── postcss.config.mjs   # PostCSS configuration
+├── tailwind.config.ts   # Tailwind CSS configuration
+├── tsconfig.json        # TypeScript configuration
+├── tsconfig.tsbuildinfo # TypeScript build info
+├── vitest-setup.ts      # Vitest test setup
+└── vitest.config.mts    # Vitest configuration
 
 Feel free to explore and modify these configurations to suit your development needs.
