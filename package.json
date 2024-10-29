@@ -13,7 +13,8 @@
     "lint:fix": "eslint . --fix",
     "check-types": "tsc --noEmit --pretty",
     "commit": "cz",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -52,6 +53,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-lottie": "^1.2.10",
+    "@vitest/coverage-v8": "^2.1.4",
     "commitizen": "^4.3.1",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.1",
@@ -71,7 +73,8 @@
     "lint-staged": "^15.2.10",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.4"
   },
   "config": {
     "commitizen": {
