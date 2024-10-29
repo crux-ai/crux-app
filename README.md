@@ -55,6 +55,7 @@ crux-app/
 
 ## Relevant Config Files
 
+```
 ├── .husky/               # Git hooks configuration
 ├── .next/                # Next.js build output
 ├── .vscode/             # VS Code settings
@@ -72,5 +73,5 @@ crux-app/
 ├── tsconfig.tsbuildinfo # TypeScript build info
 ├── vitest-setup.ts      # Vitest test setup
 └── vitest.config.mts    # Vitest configuration
-
+```
 Feel free to explore and modify these configurations to suit your development needs.
