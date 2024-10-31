@@ -64,10 +64,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               <Icons.spinner className="mr-2 size-4 animate-spin" />
             )
           : (
-              <Icons.gitHub className="mr-2 size-4" />
+              <Icons.google className="mr-2 size-4" />
             )}
         {' '}
-        GitHub
+        Google
       </Button>
     </div>
   );
