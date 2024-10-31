@@ -60,16 +60,28 @@ export default {
       },
       keyframes: {
         background: {
-          '0%, 100%': { backgroundPosition: 'left 0% bottom 0%' },
-          '50%': { backgroundPosition: 'left 200% bottom 0%' },
+          '0%, 100%': {
+            backgroundPosition: 'left 0% bottom 0%',
+          },
+          '50%': {
+            backgroundPosition: 'left 200% bottom 0%',
+          },
         },
         backgroundLinear: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '100%': { backgroundPosition: '200% 50%' },
+          '0%': {
+            backgroundPosition: '0% 50%',
+          },
+          '100%': {
+            backgroundPosition: '200% 50%',
+          },
         },
         backgroundSlide: {
-          '0%': { backgroundPosition: '0 0%' },
-          '100%': { backgroundPosition: '100% 50%' },
+          '0%': {
+            backgroundPosition: '0 0%',
+          },
+          '100%': {
+            backgroundPosition: '100% 50%',
+          },
         },
       },
     },
