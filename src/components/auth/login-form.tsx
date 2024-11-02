@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-import { UserAuthForm } from './user-auth-form';
+import { UserAuthForm } from '@/components/auth/user-auth-form';
 
 export default function LoginForm() {
   return (

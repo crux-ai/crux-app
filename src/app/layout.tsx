@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
 
-    <html lang="en" className="absolute !scroll-smooth">
+    <html lang="en" suppressHydrationWarning className="absolute !scroll-smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

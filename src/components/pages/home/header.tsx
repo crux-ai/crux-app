@@ -54,8 +54,8 @@ export default function Header() {
       <div className=" fixed  right-2 top-0 mt-1 hidden duration-500 animate-in slide-in-from-top sm:right-2 sm:top-6 md:block">
 
         <Button className="">
-          <Link href="/sign-in">
-            Sign-In
+          <Link href="/login">
+            Login
           </Link>
         </Button>
 
