@@ -7,7 +7,7 @@ import type { FieldValues } from 'react-hook-form';
 
 import { db } from '@/drizzle/db';
 import { userTable } from '@/drizzle/schema';
-import { getCurrentSession, setSessionTokenCookie } from '@/lib/auth/cookie-exchange';
+import { deleteSessionTokenCookie, getCurrentSession, setSessionTokenCookie } from '@/lib/auth/cookie-exchange';
 import { createSession, generateSessionToken, invalidateSession } from '@/lib/auth/stateful-auth';
 import { SignUpFormSchema } from '@/validations/auth';
 
@@ -92,6 +92,7 @@ export async function logout() {
   if (session) {
     await invalidateSession(session.id);
   };
+  await deleteSessionTokenCookie();
   redirect(logOutLandingPage);
 }
 
@@ -101,4 +102,11 @@ export async function authenticatePage(redirectTo: string = failedAuthRedirectPa
     return;
   }
   redirect(redirectTo);
+}
+
+export async function skipAuthentication(redirectTo: string = loggedInLandingPage) {
+  const authResult = await getCurrentSession();
+  if (authResult.session) {
+    redirect(redirectTo);
+  }
 }
