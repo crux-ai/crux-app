@@ -1,123 +1,104 @@
 'use server';
 
-import bcrypt from 'bcrypt';
+import { hash, verify } from '@node-rs/argon2';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import type { FieldValues } from 'react-hook-form';
 
 import { db } from '@/drizzle/db';
-import { users } from '@/drizzle/schema';
-import { createSession, deleteSession } from '@/lib/auth/stateless-session';
+import { userTable } from '@/drizzle/schema';
+import { getCurrentSession, setSessionTokenCookie } from '@/lib/auth/cookie-exchange';
+import { createSession, generateSessionToken, invalidateSession } from '@/lib/auth/stateful-auth';
 import { SignUpFormSchema } from '@/validations/auth';
 
-export async function signup(
-  formData: FieldValues,
-) {
-  // 1. Validate form fields
+const loggedInLandingPage = '/dashboard';
+const failedAuthRedirectPage = '/login';
+const logOutLandingPage = '/';
+
+export async function createAccount(formData: FieldValues) {
+  // 1. validate form
   const validatedFields = SignUpFormSchema.safeParse({
     email: formData.email,
     password: formData.password,
     confirmPassword: formData.confirmPassword,
   });
-
-  // If any form fields are invalid, return early
   if (!validatedFields.success) {
-    return {
-      code: 2,
-      message: 'Form Validation failed',
-    };
+    return { success: false, error: 'Invalid form credentials' };
   }
+  // check email isn't already in db
 
-  // 2. Prepare data for insertion into database
   const { email, password } = validatedFields.data;
-
-  // 3. Check if the user's email already exists
-  const existingUser = await db.query.users.findFirst({
-    where: eq(users.email, email),
+  const existingUser = await db.query.userTable.findFirst({
+    where: eq(userTable.email, email),
   });
-
   if (existingUser) {
-    return {
-      code: 1,
-      message: 'Email already exists, please use a different email or login.',
-    };
+    return { success: false, error: 'Email user already exists' };
   }
+  // 2. hash password
+  const hashedPassword = await hash(password);
+  // 3. create account in db
+  const userId = await db.insert(userTable).values({ email, password: hashedPassword }).returning({
+    id: userTable.id,
+  });
+  // 4. generate token, create session, give cookie
+  const token = generateSessionToken();
+  const session = await createSession(token, userId[0].id);
 
-  // Hash the user's password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // 3. Insert the user into the database or call an Auth Provider's API
-  const data = await db
-    .insert(users)
-    .values({
-      email,
-      password: hashedPassword,
-    })
-    .returning({ id: users.id });
-
-  const user = data[0];
-
-  if (!user) {
-    return {
-      code: 1,
-      message: 'An error occurred while creating your account.',
-    };
-  }
-
-  // 4. Create a session for the user
-  const userId = user.id.toString();
-
-  await createSession(userId);
-  redirect('/dashboard');
+  await setSessionTokenCookie(token, session.expiresAt);
+  // 5. redirect
+  redirect(loggedInLandingPage);
 }
 
-export async function login(
-  formData: FieldValues,
-) {
-  // 1. Validate form fields.
+export async function signIn(formData: FieldValues) {
+  // 1. Validate Form
   const validatedFields = SignUpFormSchema.omit({ confirmPassword: true }).safeParse({
     email: formData.email,
     password: formData.password,
   });
-  const errorMessage = { message: 'Invalid login credentials.' };
-
-  // If any form fields are invalid, return early
   if (!validatedFields.success) {
-    return {
-      code: 3,
-      message: 'Invalid Form',
-    };
+    return { success: false, error: 'Invalid form credentials' };
   }
-
-  // 2. Query the database for the user with the given email
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, validatedFields.data.email),
+  const { email, password } = validatedFields.data;
+  // 2. Authenticate Email and password - check db for email user and check password is right
+  const userResult = await db.query.userTable.findFirst({
+    where: eq(userTable.email, email),
   });
 
-  // If user is not found, return early
-  if (!user) {
-    return {
-      code: 1,
-      message: errorMessage.message,
-    };
-  }
-  // 3. Compare the user's password with the hashed password in the database
-  const passwordMatch = await bcrypt.compare(
-    validatedFields.data.password,
-    user.password,
-  );
-
-  // If the password does not match, return early
-  if (!passwordMatch) {
-    return { code: 2, message: errorMessage.message };
+  if (!userResult) {
+    return { success: false, error: 'Incorrect email or password' };
   }
 
-  // 4. If login successful, create a session for the user and redirect
-  const userId = user.id.toString();
-  await createSession(userId);
-  return { code: 0, message: 'success' };
+  const correctPassword = await verify(userResult.password, password);
+
+  if (!correctPassword) {
+    return { success: false, error: 'Incorrect email or password' };
+  }
+  // 2. Check they have no session already
+  const { session } = await getCurrentSession();
+
+  if (session !== null) {
+    redirect(loggedInLandingPage);
+  };
+  // 3. Create Session
+  const token = generateSessionToken();
+  const createdSession = await createSession(token, userResult.id);
+  await setSessionTokenCookie(token, createdSession.expiresAt);
+  // 4. Redirect
+  redirect(loggedInLandingPage);
 }
 
 export async function logout() {
-  deleteSession();
+  const { session } = await getCurrentSession();
+  if (session) {
+    await invalidateSession(session.id);
+  };
+  redirect(logOutLandingPage);
+}
+
+export async function authenticatePage(redirectTo: string = failedAuthRedirectPage) {
+  const authResult = await getCurrentSession();
+  if (authResult.session) {
+    return;
+  }
+  redirect(redirectTo);
 }

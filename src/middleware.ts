@@ -1,36 +1,63 @@
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { decrypt } from '@/lib/auth/encryption';
-
 // 1. Specify protected and public routes
 const protectedRoutes = ['/dashboard'];
-const publicRoutes = ['/login', '/create-account'];
 
-export default async function middleware(req: NextRequest) {
+export default async function middleware(request: NextRequest) {
   // 2. Check if the current route is protected or public
-  const path = req.nextUrl.pathname;
+  const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
 
   // 3. Decrypt the session from the cookie
-  const cookie = cookies().get('session')?.value;
-  const session = await decrypt(cookie);
+  const cookieStore = cookies();
+  const token = cookieStore.get('session')?.value ?? null;
+  const validToken = (token !== '' && token !== null);
 
-  // 4. Redirect
-  if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl));
+  // 4. Optimistic validation
+  if (isProtectedRoute && !validToken) {
+    return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
-  if (
-    isPublicRoute
-    && session?.userId
-    && !req.nextUrl.pathname.startsWith('/dashboard')
-    && !(req.nextUrl.pathname === '/')
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+  // 5. CSRF protection
+  if (request.method === 'GET') {
+    const response = NextResponse.next();
+    const token = request.cookies.get('session')?.value ?? null;
+    if (token !== null) {
+      // Only extend cookie expiration on GET requests since we can be sure
+      // a new session wasn't set when handling the request.
+      response.cookies.set('session', token, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      });
+    }
+    return response;
   }
 
+  const originHeader = request.headers.get('Origin');
+  // NOTE: You may need to use `X-Forwarded-Host` instead
+  const hostHeader = request.headers.get('Host');
+  if (originHeader === null || hostHeader === null) {
+    return new NextResponse(null, {
+      status: 403,
+    });
+  }
+  let origin: URL;
+  try {
+    origin = new URL(originHeader);
+  } catch {
+    return new NextResponse(null, {
+      status: 403,
+    });
+  }
+  if (origin.host !== hostHeader) {
+    return new NextResponse(null, {
+      status: 403,
+    });
+  }
   return NextResponse.next();
 }
 

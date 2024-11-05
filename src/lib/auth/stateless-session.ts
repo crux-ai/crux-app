@@ -3,7 +3,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { decrypt, encrypt } from './encryption';
+import { decrypt, encrypt } from '@/lib/auth/encryption';
 
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);

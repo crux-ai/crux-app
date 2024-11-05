@@ -7,7 +7,7 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
-export const users = pgTable(
+export const userTable = pgTable(
   'users',
   {
     id: serial('id').primaryKey(),
@@ -16,13 +16,16 @@ export const users = pgTable(
   },
 );
 
-export const sessions = pgTable('sessions', {
-  id: serial('id').primaryKey(),
-  userId: integer('userId')
-    .references(() => users.id)
-    .notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
+export const sessionTable = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => userTable.id),
+  expiresAt: timestamp('expires_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
 });
 
-export type NewUser = InferInsertModel<typeof users>;
-export type NewSession = InferInsertModel<typeof sessions>;
+export type User = InferInsertModel<typeof userTable>;
+export type Session = InferInsertModel<typeof sessionTable>;

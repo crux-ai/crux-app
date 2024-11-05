@@ -21,6 +21,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: 'Crux',
   description: 'Empowering leadership with engineering insight',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

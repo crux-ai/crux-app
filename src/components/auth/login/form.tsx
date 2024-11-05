@@ -3,48 +3,46 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import React from 'react';
 import { type FieldValues, useForm } from 'react-hook-form';
+import toast, { Toaster } from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login } from '@/lib/auth/actions';
+import { signIn } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 import { SignUpFormSchema } from '@/validations/auth';
 
 type LoginFormProps = {} & React.HTMLAttributes<HTMLDivElement>;
 
 export default function LoginForm({ className, ...props }: LoginFormProps) {
-  const { formState, register, reset, handleSubmit, setError } = useForm({
+  const { formState, register, reset, handleSubmit } = useForm({
     resolver: zodResolver(SignUpFormSchema.omit({ confirmPassword: true })),
   });
   const { errors, isSubmitting } = formState;
 
   const onSubmit = async (formData: FieldValues) => {
-    const loginResponse = await login(formData);
     try {
-      const { code, message } = loginResponse;
-      if (code === 1) {
-        setError('email', { type: 'custom', message });
-        return;
-      };
-      if (code === 2) {
-        setError('password', { type: 'custom', message });
+      // if successful it will redirect
+      // work out where to put reset
+      const { success, error } = await signIn(formData);
+      if (!success) {
+        toast.error(error);
         return;
       }
-      if (code === 3) {
-        setError('email', { type: 'custom', message });
-        setError('password', { type: 'custom', message });
-        return;
-      }
-      reset();
     } catch {
-      reset();
+      toast.error('Something went wrong!');
+      return;
     }
+    reset();
   };
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
       <h1 className="mb-5 text-2xl"> Login </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">

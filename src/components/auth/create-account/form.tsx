@@ -3,19 +3,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import React from 'react';
 import { type FieldValues, useForm } from 'react-hook-form';
+import { toast, Toaster } from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { signup } from '@/lib/auth/actions';
+import { createAccount } from '@/lib/auth/actions';
 import { cn } from '@/lib/utils';
 import { SignUpFormSchema } from '@/validations/auth';
 
 type SignUpFormProps = {} & React.HTMLAttributes<HTMLDivElement>;
 
 export default function SignUpForm({ className, ...props }: SignUpFormProps) {
-  const { formState, register, handleSubmit, reset, setError, watch } = useForm({
+  const { formState, register, handleSubmit, reset, watch } = useForm({
     resolver: zodResolver(SignUpFormSchema),
   });
   const { errors, isSubmitting } = formState;
@@ -23,21 +24,27 @@ export default function SignUpForm({ className, ...props }: SignUpFormProps) {
   const watchPassword = watch('password');
 
   const onSubmit = async (formData: FieldValues) => {
-    const response = await signup(formData);
     try {
-      const { code, message } = response;
-      if (code !== 0) {
-        setError('email', { type: 'custom', message });
+      // if successful it will redirect
+      // work out where to put reset
+      const { success, error } = await createAccount(formData);
+      if (!success) {
+        toast.error(error);
         return;
       }
-      reset();
     } catch {
-      reset();
+      toast.error('Something went wrong!');
+      return;
     }
+    reset();
   };
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
       <h1 className="mb-5 text-2xl"> Create Account </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">
