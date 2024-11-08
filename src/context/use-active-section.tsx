@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { ActiveSectionContext } from '@/context/active-section';
+import { ActiveSectionContext } from '@/context/creators';
 
 export function useActiveSection() {
   const context = useContext(ActiveSectionContext);
