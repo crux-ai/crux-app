@@ -1,0 +1,298 @@
+export const commits = [
+  {
+    sha: '7829af1234567890abcdef1234567890abcdef12',
+    node_id: 'MDY6Q29tbWl0MTIzNDU2Nzg5',
+    commit: {
+      author: {
+        name: 'Jane Developer',
+        email: 'jane@example.com',
+        date: '2024-03-15T14:32:12Z',
+      },
+      committer: {
+        name: 'Jane Developer',
+        email: 'jane@example.com',
+        date: '2024-03-15T14:32:12Z',
+      },
+      message: 'Fix navigation bug in mobile view',
+      tree: {
+        sha: '827364519abc8def1234567890abcdef12345678',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/827364519abc',
+      },
+      comment_count: 0,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/7829af123',
+    html_url: 'https://github.com/octocat/project/commit/7829af123',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/7829af123/comments',
+    author: {
+      login: 'janedeveloper',
+      id: 1234567,
+      node_id: 'MDQ6VXNlcjEyMzQ1Njc=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/1234567?v=4',
+      url: 'https://api.github.com/users/janedeveloper',
+    },
+    stats: {
+      additions: 15,
+      deletions: 10,
+      total: 25,
+    },
+  },
+  {
+    sha: '456def7890123456789abcdef1234567890abcde',
+    node_id: 'MDY6Q29tbWl0OTg3NjU0MzIx',
+    commit: {
+      author: {
+        name: 'John Coder',
+        email: 'john@example.com',
+        date: '2024-03-14T09:45:23Z',
+      },
+      committer: {
+        name: 'John Coder',
+        email: 'john@example.com',
+        date: '2024-03-14T09:45:23Z',
+      },
+      message: 'Update dependencies and add unit tests',
+      tree: {
+        sha: '654321abcdef1234567890abcdef123456789012',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/654321abc',
+      },
+      comment_count: 2,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/456def789',
+    html_url: 'https://github.com/octocat/project/commit/456def789',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/456def789/comments',
+    author: {
+      login: 'johncoder',
+      id: 7654321,
+      node_id: 'MDQ6VXNlcjc2NTQzMjE=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/7654321?v=4',
+      url: 'https://api.github.com/users/johncoder',
+    },
+    stats: {
+      additions: 45,
+      deletions: 12,
+      total: 57,
+    },
+  },
+  {
+    sha: '123abc4567890123456789abcdef1234567890ab',
+    node_id: 'MDY6Q29tbWl0NTQzMjE5ODc=',
+    commit: {
+      author: {
+        name: 'Sarah Engineer',
+        email: 'sarah@example.com',
+        date: '2024-03-13T16:20:45Z',
+      },
+      committer: {
+        name: 'Sarah Engineer',
+        email: 'sarah@example.com',
+        date: '2024-03-13T16:20:45Z',
+      },
+      message: 'Implement dark mode feature',
+      tree: {
+        sha: '987654321abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/987654321',
+      },
+      comment_count: 1,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/123abc456',
+    html_url: 'https://github.com/octocat/project/commit/123abc456',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/123abc456/comments',
+    author: {
+      login: 'sarahengineer',
+      id: 3456789,
+      node_id: 'MDQ6VXNlcjM0NTY3ODk=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/3456789?v=4',
+      url: 'https://api.github.com/users/sarahengineer',
+    },
+    stats: {
+      additions: 120,
+      deletions: 35,
+      total: 155,
+    },
+  },
+  {
+    sha: '789def0123456789abcdef1234567890abcdef01',
+    node_id: 'MDY6Q29tbWl0Nzg5MDEyMzQ=',
+    commit: {
+      author: {
+        name: 'Alex DevOps',
+        email: 'alex@example.com',
+        date: '2024-03-12T11:15:30Z',
+      },
+      committer: {
+        name: 'Alex DevOps',
+        email: 'alex@example.com',
+        date: '2024-03-12T11:15:30Z',
+      },
+      message: 'Update Docker configuration for production',
+      tree: {
+        sha: '234567890abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/234567890',
+      },
+      comment_count: 3,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/789def012',
+    html_url: 'https://github.com/octocat/project/commit/789def012',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/789def012/comments',
+    author: {
+      login: 'alexdevops',
+      id: 8901234,
+      node_id: 'MDQ6VXNlcjg5MDEyMzQ=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/8901234?v=4',
+      url: 'https://api.github.com/users/alexdevops',
+    },
+    stats: {
+      additions: 85,
+      deletions: 67,
+      total: 152,
+    },
+  },
+  {
+    sha: '012abc3456789012345678901234567890abcdef',
+    node_id: 'MDY6Q29tbWl0MDEyMzQ1Njc=',
+    commit: {
+      author: {
+        name: 'Maria Frontend',
+        email: 'maria@example.com',
+        date: '2024-03-11T15:45:18Z',
+      },
+      committer: {
+        name: 'Maria Frontend',
+        email: 'maria@example.com',
+        date: '2024-03-11T15:45:18Z',
+      },
+      message: 'Optimize CSS bundle size',
+      tree: {
+        sha: '345678901abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/345678901',
+      },
+      comment_count: 0,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/012abc345',
+    html_url: 'https://github.com/octocat/project/commit/012abc345',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/012abc345/comments',
+    author: {
+      login: 'mariafrontend',
+      id: 9012345,
+      node_id: 'MDQ6VXNlcjkwMTIzNDU=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/9012345?v=4',
+      url: 'https://api.github.com/users/mariafrontend',
+    },
+    stats: {
+      additions: 23,
+      deletions: 156,
+      total: 179,
+    },
+  },
+  {
+    sha: '345def6789012345678901234567890abcdef012',
+    node_id: 'MDY6Q29tbWl0MzQ1Njc4OTA=',
+    commit: {
+      author: {
+        name: 'Chris Backend',
+        email: 'chris@example.com',
+        date: '2024-03-10T13:20:55Z',
+      },
+      committer: {
+        name: 'Chris Backend',
+        email: 'chris@example.com',
+        date: '2024-03-10T13:20:55Z',
+      },
+      message: 'Implement caching layer for API responses',
+      tree: {
+        sha: '456789012abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/456789012',
+      },
+      comment_count: 5,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/345def678',
+    html_url: 'https://github.com/octocat/project/commit/345def678',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/345def678/comments',
+    author: {
+      login: 'chrisbackend',
+      id: 2345678,
+      node_id: 'MDQ6VXNlcjIzNDU2Nzg=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/2345678?v=4',
+      url: 'https://api.github.com/users/chrisbackend',
+    },
+    stats: {
+      additions: 234,
+      deletions: 45,
+      total: 279,
+    },
+  },
+  {
+    sha: '678abc9012345678901234567890abcdef01234',
+    node_id: 'MDY6Q29tbWl0Njc4OTAxMjM=',
+    commit: {
+      author: {
+        name: 'Pat Security',
+        email: 'pat@example.com',
+        date: '2024-03-09T10:05:33Z',
+      },
+      committer: {
+        name: 'Pat Security',
+        email: 'pat@example.com',
+        date: '2024-03-09T10:05:33Z',
+      },
+      message: 'Fix XSS vulnerability in user input handling',
+      tree: {
+        sha: '567890123abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/567890123',
+      },
+      comment_count: 4,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/678abc901',
+    html_url: 'https://github.com/octocat/project/commit/678abc901',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/678abc901/comments',
+    author: {
+      login: 'patsecurity',
+      id: 3456789,
+      node_id: 'MDQ6VXNlcjM0NTY3ODk=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/3456789?v=4',
+      url: 'https://api.github.com/users/patsecurity',
+    },
+    stats: {
+      additions: 56,
+      deletions: 23,
+      total: 79,
+    },
+  },
+  {
+    sha: '901def2345678901234567890abcdef0123456',
+    node_id: 'MDY6Q29tbWl0OTAxMjM0NTY=',
+    commit: {
+      author: {
+        name: 'Sam UI',
+        email: 'sam@example.com',
+        date: '2024-03-08T16:40:22Z',
+      },
+      committer: {
+        name: 'Sam UI',
+        email: 'sam@example.com',
+        date: '2024-03-08T16:40:22Z',
+      },
+      message: 'Add accessibility improvements to form components',
+      tree: {
+        sha: '678901234abcdef1234567890abcdef123456789',
+        url: 'https://api.github.com/repos/octocat/project/git/trees/678901234',
+      },
+      comment_count: 1,
+    },
+    url: 'https://api.github.com/repos/octocat/project/commits/901def234',
+    html_url: 'https://github.com/octocat/project/commit/901def234',
+    comments_url: 'https://api.github.com/repos/octocat/project/commits/901def234/comments',
+    author: {
+      login: 'samui',
+      id: 4567890,
+      node_id: 'MDQ6VXNlcjQ1Njc4OTA=',
+      avatar_url: 'https://avatars.githubusercontent.com/u/4567890?v=4',
+      url: 'https://api.github.com/users/samui',
+    },
+    stats: {
+      additions: 89,
+      deletions: 34,
+      total: 123,
+    },
+  },
+];

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Query } from '@/components/pages/dashboard/content/query';
+import { CommitTable } from '@/components/pages/dashboard/show/commit-table';
 import { authenticatePage } from '@/lib/auth/actions';
 
 export default async function Page() {
@@ -8,7 +8,9 @@ export default async function Page() {
 
   return (
     <div id="content" className="flex  size-full items-center justify-center bg-background ">
-      <Query />
+      <div className="w-1/2">
+        <CommitTable />
+      </div>
     </div>
   );
 }
