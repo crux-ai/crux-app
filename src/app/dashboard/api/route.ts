@@ -1,8 +1,12 @@
 import { Octokit } from '@octokit/rest';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+import { authenticatePage } from '@/lib/auth/actions';
+
+export async function GET(request: NextRequest) {
+  await authenticatePage();
+  const searchParams = request.nextUrl.searchParams;
   const owner = searchParams.get('owner');
   const repo = searchParams.get('repo');
 
