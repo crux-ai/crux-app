@@ -14,7 +14,6 @@ export function handleSelect(router: AppRouterInstance, pathname: string, search
 }
 
 export function handleShowSelect(router: AppRouterInstance, pathname: string, searchParams: ReadonlyURLSearchParams, githubURL: string) {
-  // If i select item, i want to go to the path /show?repo=&owner....
   const params = new URLSearchParams(searchParams);
   const { owner, repo, branch } = getValues(githubURL);
   if (!owner || !repo || !branch) {

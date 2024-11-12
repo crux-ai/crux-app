@@ -16,7 +16,7 @@ function ShowPage() {
   const { inputValue, setInputValue } = useCommand();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const commandPath = `${pathname}/content`;
+  const commandPath = `${pathname}/show`;
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
