@@ -35,5 +35,9 @@ export function getValues(githubURL: string) {
   if (path.length === 5 && path[3] === 'tree') {
     return { owner: path[1], repo: path[2], branch: path[4] };
   }
+  if (path.length > 3 && path[3] === 'tree') {
+    const branchWithSlash = path.slice(4).join('/');
+    return { owner: path[1], repo: path[2], branch: branchWithSlash };
+  }
   return { owner: null, repo: null, branch: null };
 }
