@@ -1,5 +1,6 @@
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { ReadonlyURLSearchParams } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 export function createCommandPageURL(pathname: string, searchParams: ReadonlyURLSearchParams, command: string, payload: string) {
   const params = new URLSearchParams(searchParams);
@@ -17,6 +18,7 @@ export function handleShowSelect(router: AppRouterInstance, pathname: string, se
   const params = new URLSearchParams(searchParams);
   const { owner, repo, branch } = getValues(githubURL);
   if (!owner || !repo || !branch) {
+    toast.error('Invalid github url');
     return;
   }
   params.set('owner', owner);

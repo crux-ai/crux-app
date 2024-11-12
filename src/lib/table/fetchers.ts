@@ -16,17 +16,22 @@ export async function getCommits(owner: string | null, repo: string | null, bran
   }
 
   if (!owner || !repo) {
-    return { data: null };
+    return { data: null, message: 'No owner or repo given' };
   }
+  try {
+    const { data } = await octokit.rest.repos.listCommits({
+      owner,
+      repo,
+      sha: branch,
+      per_page: 100,
+    });
+    const commits = GitCommitResponse.safeParse(data);
 
-  const { data } = await octokit.rest.repos.listCommits({
-    owner,
-    repo,
-    sha: branch,
-    per_page: 100,
-  });
-
-  const commits = GitCommitResponse.safeParse(data);
-
-  return commits;
+    if (!commits.success) {
+      return { data: null, message: 'Failed validation' };
+    }
+    return { data: commits.data, message: 'success' };
+  } catch {
+    return { data: null, message: 'Bad response from Github. Does the repo exits, or do you have permissions?' };
+  }
 }
