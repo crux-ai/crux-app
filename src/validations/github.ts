@@ -50,7 +50,7 @@ export const CommitSchema = z.object({
 }).nullable();
 
 export const GitCommitSchemaPlus = z.object({
-  sha: z.string().nullable(),
+  sha: z.string(),
   node_id: z.string().nullable(),
   commit: CommitSchema.nullable(),
   url: z.string().nullable(),

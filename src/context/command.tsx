@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { CommandContext } from './creators';
+import { CommandContext } from '@/context/creators';
 
 export type pagesType = string[];
 

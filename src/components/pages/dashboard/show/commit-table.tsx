@@ -9,7 +9,7 @@ import type { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getCommits } from '@/lib/table/fetchers';
+import { getCommits } from '@/lib/git/fetchers';
 import type { GitCommitSchema } from '@/validations/github';
 
 const columns: ColumnDef<GitCommit>[] = [

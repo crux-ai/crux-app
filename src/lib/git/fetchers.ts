@@ -2,14 +2,7 @@ import { Octokit } from '@octokit/rest';
 import type { z } from 'zod';
 
 import { authenticatePage } from '@/lib/auth/actions';
-import { EventResponseSchema, GitCommitResponse, GitCommitResponsePlus, ListBranchesResponseSchema } from '@/validations/github';
-
-type Activity = z.infer<typeof EventResponseSchema>;
-
-type GitActivityResponse = {
-  data: Activity | null;
-  message: string;
-};
+import { GitCommitResponse, GitCommitResponsePlus, GitHubTreeResponseSchema, ListBranchesResponseSchema } from '@/validations/github';
 
 export async function getCommits(owner: string | null, repo: string | null, branch: string | null) {
   await authenticatePage();
@@ -25,11 +18,10 @@ export async function getCommits(owner: string | null, repo: string | null, bran
     return { data: null, message: 'No owner or repo given' };
   }
   try {
-    const { data } = await octokit.rest.repos.listCommits({
+    const data = await octokit.paginate(octokit.rest.repos.listCommits, {
       owner,
       repo,
       sha: branch,
-      per_page: 100,
     });
     const commits = GitCommitResponse.safeParse(data);
 
@@ -67,49 +59,70 @@ export async function getBranches(owner: string | null, repo: string | null) {
   }
 }
 
-export async function getAllCommits(owner: string | null, repo: string | null, branches: string[] | null = null) {
-  if (branches === null) {
-    const branchResponse = await getBranches(owner, repo);
-    branches = branchResponse.data?.map (item => item.name) || [];
-  }
+type AllCommits = z.infer<typeof GitCommitResponsePlus>;
+
+type AllCommitReturn = { data: AllCommits | null; branches: { name: string; head: string }[] | null ; message: string };
+
+export async function getAllCommits(owner: string | null, repo: string | null): Promise<AllCommitReturn> {
+  await authenticatePage();
+  const branchResponse = await getBranches(owner, repo);
+  const branches = branchResponse.data?.map (item => ({ name: item.name, head: item.commit.sha })) || [];
+
   if (branches.length === 0) {
-    return { data: null, message: 'Issue with branches, no branches were found' };
+    return { data: null, branches: null, message: 'Issue with branches, no branches were found' };
   }
   const allCommits = await Promise.all(
-    branches.map(async (branchName) => {
-      const commitResponse = await getCommits(owner, repo, branchName);
+    branches.map(async (branch) => {
+      const commitResponse = await getCommits(owner, repo, branch.name);
 
-      return commitResponse.data?.map(commits => ({ ...commits, branch: branchName })) || null;
+      return commitResponse.data?.map(commits => ({ ...commits, branch: branch.name })) || null;
     }),
   );
 
   const { data, success } = GitCommitResponsePlus.safeParse(allCommits.flat());
 
   if (!success) {
-    return { data: null, message: 'Data not in correct format' };
+    return { data: null, branches: null, message: 'Data not in correct format' };
   }
 
-  return { data, message: 'success' };
+  return { data, branches, message: 'success' };
 }
 
-export async function getGitActivity(owner: string | null, repo: string | null): Promise<GitActivityResponse> {
-  // Get repository events
+type FileTree = z.infer<typeof GitHubTreeResponseSchema>;
 
+type TreeReturn = { data: FileTree | null; message: string };
+
+export async function getTreeRecursive(owner: string | null, repo: string | null, branch: string | null): Promise<TreeReturn> {
   await authenticatePage();
+
   const octokit = new Octokit({
     auth: process.env.GITHUB_PAT,
   });
+
   if (!owner || !repo) {
     return { data: null, message: 'No owner or repo given' };
   }
-  const { data: events } = await octokit.activity.listRepoEvents({
+
+  if (!branch) {
+    branch = 'main';
+  }
+
+  const response = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
     owner,
     repo,
-    per_page: 100, // adjust as needed
+    tree_sha: branch,
+    recursive: 'true',
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
   });
-  const { data, success } = EventResponseSchema.safeParse(events.filter(item => (item.type === 'CreateEvent') || (item.type === 'PushEvent')));
+
+  const tree = response.data.tree;
+
+  const { data, success } = GitHubTreeResponseSchema.safeParse(tree);
+
   if (!success) {
-    return { data: null, message: 'Incorrect data format' };
+    return { data: null, message: 'Data not in correct format' };
   }
 
   return { data, message: 'success' };

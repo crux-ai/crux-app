@@ -2,6 +2,7 @@ import { createContext } from 'react';
 
 import type { SectionName } from '@/context/active-section';
 import type { pagesType } from '@/context/command';
+import type { MenuOption, OwnerRepo } from '@/context/git-show';
 
 type CommandContextType = {
   pages: pagesType | never[] ;
@@ -24,3 +25,12 @@ type ActiveSectionContextType = {
 };
 
 export const ActiveSectionContext = createContext<ActiveSectionContextType | null>(null);
+
+type GitShowContextType = {
+  menuOption: MenuOption;
+  setMenuOption: React.Dispatch<React.SetStateAction<MenuOption>>;
+  ownerRepo: OwnerRepo;
+  setOwnerRepo: React.Dispatch<React.SetStateAction<OwnerRepo>>;
+};
+
+export const GitShowContext = createContext<GitShowContextType | null>(null);
