@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 
+import type { FileItem } from '@/components/pages/dashboard/show/file-explorer';
 import type { SectionName } from '@/context/active-section';
 import type { pagesType } from '@/context/command';
 import type { MenuOption, OwnerRepo } from '@/context/git-show';
@@ -34,6 +35,8 @@ type GitShowContextType = {
   setOwnerRepo: React.Dispatch<React.SetStateAction<OwnerRepo>>;
   commitData: AllCommits;
   setCommitData: React.Dispatch<React.SetStateAction<AllCommits>>;
+  fileData: FileItem[];
+  setFileData: React.Dispatch<React.SetStateAction<FileItem[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import type { FileItem } from '@/components/pages/dashboard/show/file-explorer';
 import { GitShowContext } from '@/context/creators';
 import type { AllCommits } from '@/lib/git/fetchers';
 
@@ -17,6 +18,7 @@ export default function GitShowContextProvider({ children }: GitShowContextProps
   const [ownerRepo, setOwnerRepo] = useState<OwnerRepo>({ owner: 'jack-cordery', repo: 'crux', branch: 'main' });
   const [commitData, setCommitData] = useState<AllCommits>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fileData, setFileData] = useState<FileItem[]>([]);
 
   const contextValue = useMemo(() => ({
     menuOption,
@@ -25,9 +27,11 @@ export default function GitShowContextProvider({ children }: GitShowContextProps
     setOwnerRepo,
     commitData,
     setCommitData,
+    fileData,
+    setFileData,
     loading,
     setLoading,
-  }), [menuOption, loading, commitData, ownerRepo]);
+  }), [menuOption, loading, commitData, fileData, ownerRepo]);
 
   return (
     <GitShowContext.Provider value={contextValue}>

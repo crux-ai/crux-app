@@ -15,25 +15,22 @@ import {
 } from '@/components/ui/card';
 import type { MenuOption } from '@/context/git-show';
 import { useGitShow } from '@/context/use-git-show';
-import { getAllCommits } from '@/lib/git/fetchers';
+import { getAllCommits, getTreeRecursive } from '@/lib/git/fetchers';
+import { addParentIdAndNameFromPath } from '@/lib/git/transformations';
 import { cn } from '@/lib/utils';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
 function MainContent() {
-  const { menuOption, ownerRepo } = useGitShow();
+  const { menuOption } = useGitShow();
 
   if (menuOption === 'File Explorer') {
     return (
-      <FileExplorer
-        owner={ownerRepo.owner}
-        repo={ownerRepo.repo}
-        branch={ownerRepo.branch}
-      />
+      <FileExplorer />
     );
   }
   if (menuOption === 'Commit History') {
-    return <GitGraph owner={ownerRepo.owner} repo={ownerRepo.repo} />;
+    return <GitGraph />;
   }
   if (menuOption === 'Statistics') {
     return <div className="size-full"><Statistics /></div>;
@@ -87,13 +84,15 @@ const menuOptions: { title: MenuOption; isNew: boolean }[] = [
 
 export default function ShowCard({ className, ...props }: CardProps) {
   //  const [ownerRepo, setOwnerRepo] = useState({ owner: 'jack-cordery', repo: 'dashboard' });
-  const { ownerRepo, setCommitData, setMenuOption, loading, setLoading } = useGitShow();
+  const { ownerRepo, setCommitData, setMenuOption, loading, setLoading, setFileData } = useGitShow();
   // Lets load the data on load of ShowCard, so that we don't have to fetch data for every screen!
 
   useEffect(() => {
     const handleLoad = async () => {
       const { data } = await getAllCommits(ownerRepo.owner, ownerRepo.repo);
+      const { data: fileData } = await getTreeRecursive(ownerRepo.owner, ownerRepo.repo, ownerRepo.branch);
       setCommitData(data || []);
+      setFileData(addParentIdAndNameFromPath(fileData || []));
       const currentHash = window.location.hash.substring(1);
       if (['File Explorer', 'Commit History', 'Statistics', 'Mind Map'].includes(currentHash)) {
         setMenuOption(currentHash as MenuOption);
@@ -101,7 +100,7 @@ export default function ShowCard({ className, ...props }: CardProps) {
       setLoading(false);
     };
     handleLoad();
-  }, [ownerRepo, setLoading, setCommitData, setMenuOption]);
+  }, [ownerRepo, setFileData, setLoading, setCommitData, setMenuOption]);
 
   return (
     <div className="mt-10 flex flex-row gap-2 px-2">

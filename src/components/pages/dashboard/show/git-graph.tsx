@@ -1,11 +1,10 @@
 'use client';
 
 import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, type Row, useReactTable } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { useMemo } from 'react';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getAllCommits } from '@/lib/git/fetchers';
+import { useGitShow } from '@/context/use-git-show';
 import { type Commits, transformAllCommitsGitGraph } from '@/lib/git/transformations'; // Change this
 
 // function drawGitGraph(row: Row<Commits>, branch: string) {
@@ -66,27 +65,11 @@ function formatBranch(row: Row<Commits>, column_name: string | null) {
   }
 }
 
-export function GitGraph({ owner, repo }: { owner: string | null; repo: string | null }) {
-  const [ownerRepo] = useState({ owner, repo });
-  const [tableData, setTableData] = useState<Commits[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [failedLoad, setFailedLoad] = useState(false);
-
-  useEffect(() => {
-    const handleLoad = async () => {
-      const { data, message } = await getAllCommits(ownerRepo.owner, ownerRepo.repo);
-      if (data) {
-        const cleanData = transformAllCommitsGitGraph(data);
-        setTableData(cleanData);
-        setIsLoading(false);
-        return;
-      }
-      toast.error(message);
-      setFailedLoad(true);
-      setIsLoading(false);
-    };
-    handleLoad();
-  }, [ownerRepo]);
+export function GitGraph() {
+  const { commitData } = useGitShow();
+  const tableData = useMemo(() => {
+    return transformAllCommitsGitGraph(commitData);
+  }, [commitData]);
 
   const branchesFromSource = tableData.map(item => item.mergeSource);
   const uniqueBranches = [...new Set(branchesFromSource)];
@@ -116,44 +99,36 @@ export function GitGraph({ owner, repo }: { owner: string | null; repo: string |
     },
   });
 
-  return (isLoading
-    ? (
-        <div>
-          Loading
-        </div>
-      )
-    : (failedLoad
-        ? ((<div>Failed Load! Ensure correct url is supplied or that you haven't hit your github rate limit</div>))
-        : (
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map(headerGroup => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.map(row => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell className="  p-2" key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ))
+  return (
+    <Table>
+      <TableHeader>
+        {table.getHeaderGroups().map(headerGroup => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <TableHead key={header.id}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows.map(row => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <TableCell className="  p-2" key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+
   );
 }
