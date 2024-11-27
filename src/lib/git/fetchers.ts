@@ -59,7 +59,7 @@ export async function getBranches(owner: string | null, repo: string | null) {
   }
 }
 
-type AllCommits = z.infer<typeof GitCommitResponsePlus>;
+export type AllCommits = z.infer<typeof GitCommitResponsePlus>;
 
 type AllCommitReturn = { data: AllCommits | null; branches: { name: string; head: string }[] | null ; message: string };
 

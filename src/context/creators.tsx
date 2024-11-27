@@ -3,6 +3,7 @@ import { createContext } from 'react';
 import type { SectionName } from '@/context/active-section';
 import type { pagesType } from '@/context/command';
 import type { MenuOption, OwnerRepo } from '@/context/git-show';
+import type { AllCommits } from '@/lib/git/fetchers';
 
 type CommandContextType = {
   pages: pagesType | never[] ;
@@ -31,6 +32,10 @@ type GitShowContextType = {
   setMenuOption: React.Dispatch<React.SetStateAction<MenuOption>>;
   ownerRepo: OwnerRepo;
   setOwnerRepo: React.Dispatch<React.SetStateAction<OwnerRepo>>;
+  commitData: AllCommits;
+  setCommitData: React.Dispatch<React.SetStateAction<AllCommits>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const GitShowContext = createContext<GitShowContextType | null>(null);
