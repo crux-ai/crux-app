@@ -1,6 +1,7 @@
 'use client';
 
 import { CommitLineGraph } from '@/components/pages/dashboard/show/commit-line-graph';
+import LanguagePie from '@/components/pages/dashboard/show/language-pie';
 import { TopAuthorBars } from '@/components/pages/dashboard/show/top-author-bars';
 
 export function Statistics() {
@@ -11,6 +12,9 @@ export function Statistics() {
       </div>
       <div className="col-span-1">
         <TopAuthorBars />
+      </div>
+      <div>
+        <LanguagePie />
       </div>
     </div>
   );

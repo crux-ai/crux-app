@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { Languages } from '@/lib/git/languages';
 import type { GitCommitSchemaPlus, GitHubTreeItemSchema } from '@/validations/github';
 import { Tree } from '@/validations/github';
 
@@ -201,7 +202,6 @@ function dateToGroup(date: Date, frequency: Frequencies): Date {
  * @param frequency - Grouping frequency: 'h' (hourly), 'd' (daily), or 'm' (monthly)
  * @returns Array of objects with date string and commit frequency count
  */
-
 export function groupByDate(data: { sha: string; date: string | null }[], frequency: Frequencies) {
   // Fix this - lets just keep it as a date until the formatter for the actual graph itself!
 
@@ -289,12 +289,17 @@ function fillZeroes(chartData: ChartData, frequency: Frequencies) {
 
 export type Range = 'd' | 'm' | 'y' | 'all';
 
+/**
+ * Gets commit frequency data for top authors within a specified time range.
+ * Filters commits based on the given time range, removes duplicate commits by SHA,
+ * and returns author commit frequencies sorted in descending order.
+ *
+ * @param allCommits - Array of all commit data
+ * @param range - Time range to analyze: 'd' (24h), 'm' (30 days), 'y' (12 months), or 'all' (all time)
+ * @returns Array of objects containing author names and their commit frequencies, sorted by frequency
+ * @throws Error if an invalid range is provided
+ */
 export function getTopAuthorData(allCommits: AllCommits[], range: Range = 'all') {
-// So here we are again. Im gonna need a function that takes in allCommits and gives it to me in the shape
-// that Top Authors bar needs it in
-// That looks like sorted in descending order
-// Grouped by Author (email and name?? )
-// So that looks something like
   const dateNow = new Date();
   let commitsRange: AllCommits[] = [];
   switch (range) {
@@ -342,4 +347,84 @@ export function getTopAuthorData(allCommits: AllCommits[], range: Range = 'all')
   const authorFrequency = Object.entries(grouped).map(author => ({ author: author[0], frequency: author[1] }));
   authorFrequency.sort((a, b) => b.frequency - a.frequency);
   return authorFrequency;
+}
+
+/**
+ * Extracts the file extension from a given file path.
+ * Only handles simple file paths with a single dot separator.
+ *
+ * @param path - The file path to extract the extension from
+ * @returns The file extension without the dot, or null if no extension found
+ */
+function getExtension(path: string, withPeriod: boolean): string | null {
+  const splitPath = path.split('.');
+  if (splitPath.length > 1) {
+    return withPeriod ? `.${splitPath[splitPath.length - 1]}` : splitPath[splitPath.length - 1];
+  }
+  return null;
+}
+
+/**
+ * Creates a mapping from file extensions to programming language names.
+ * Filters the input languages to only include programming languages (excludes data, markup etc).
+ * For each programming language, maps all its file extensions to its name.
+ *
+ * @param languages - Object containing language definitions with their metadata
+ * @returns Map where keys are file extensions (with dot prefix) and values are programming language names
+ */
+function languageToMap(languages: Languages) {
+  const languagesClean = Object.entries(languages).map(lang => ({
+    name: lang[0],
+    ...lang[1],
+  })).filter(lang => lang.type === 'programming');
+  const languagesExploded = languagesClean.flatMap(lang => lang.extensions?.map(extension => ({ name: lang.name, extension }))).filter(lang => lang);
+
+  const languageMap = new Map(languagesExploded.map(l => [l?.extension, l?.name]));
+  return languageMap;
+}
+
+export type LanguageFrequency = {
+  extension: string;
+  frequency: number;
+  language: string | null;
+  type: string | null;
+};
+
+/**
+ * Analyzes the language distribution of files in a repository by counting file extensions.
+ * Maps file extensions to programming languages using the provided language definitions.
+ *
+ * @param allFiles - Array of files from the repository to analyze
+ * @param languages - Language definitions mapping names to metadata
+ * @returns Array of objects containing:
+ *          - frequency: Count of files with this extension
+ *          - language: Name of mapped programming language, or null if unknown
+ */
+export function getLanguageFreq(allFiles: FileItem[], languages: Languages) {
+  // This is going to take the files
+
+  // Get their extensison
+  const fileExtensions = allFiles.filter(file => file.type === 'blob').map(file => ({ extension: getExtension(file.path, true) }));
+  // group by said extension and get count
+  const groupedExtensions = fileExtensions.reduce((acc, curr) => {
+    const key = curr.extension || 'Unknown';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const extensionFrequency = Object.entries(groupedExtensions).map(extension => ({ extension: extension[0], frequency: extension[1] }));
+  extensionFrequency.sort((a, b) => b.frequency - a.frequency);
+
+  // Map it to language
+  const languageMap = languageToMap(languages);
+
+  const languageFrequency = extensionFrequency.map(ext => ({ language: (languageMap.get(ext.extension) || null), ...ext }));
+
+  const grouped = languageFrequency.reduce((acc, curr) => {
+    const key = curr.language || 'Unknown';
+    acc[key] = (acc[key] || 0) + curr.frequency;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return Object.entries(grouped).map(group => ({ language: group[0], frequency: group[1] }));
 }
