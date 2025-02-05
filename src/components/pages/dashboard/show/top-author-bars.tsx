@@ -31,7 +31,7 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
   },
   label: {
-    color: 'hsl(var(--background))',
+    color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig;
 
@@ -106,7 +106,7 @@ export function TopAuthorBars() {
               <LabelList
                 dataKey="author"
                 position="insideLeft"
-                offset={8}
+                offset={24}
                 className="fill-[--color-label]"
                 fontSize={12}
               />

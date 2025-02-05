@@ -1,3 +1,23 @@
 {
-  "extends": ["next/core-web-vitals", "prettier", "next/typescript", "plugin:tailwindcss/recommended"]
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "next/typescript",
+    "plugin:tailwindcss/recommended",
+    "plugin:react/recommended",
+    "plugin:react-dom/recommended"
+  ],
+  "plugins": ["react", "react-dom"],
+  "rules": {
+    "react/no-danger": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "react/prop-types": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }
