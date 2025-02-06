@@ -55,7 +55,7 @@ ${colorConfig
       .map(([key, itemConfig]) => {
         const color
       = itemConfig.theme?.[theme as keyof typeof itemConfig.theme]
-      || itemConfig.color;
+        || itemConfig.color;
         return color ? `  --color-${key}: ${color};` : null;
       })
       .join('\n')}
@@ -336,8 +336,8 @@ function getPayloadConfigFromPayload(
 
   const payloadPayload
     = 'payload' in payload
-    && typeof payload.payload === 'object'
-    && payload.payload !== null
+      && typeof payload.payload === 'object'
+      && payload.payload !== null
       ? payload.payload
       : undefined;
 
