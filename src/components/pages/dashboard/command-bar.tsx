@@ -9,15 +9,14 @@ import { Badge } from '@/components/ui/badge';
 import CommandContextProvider from '@/context/command';
 import { useCommand } from '@/context/use-command';
 import { commands, demoCards, loadItems, OpenItems, showItems } from '@/lib/command/data';
-import { handleSelect } from '@/lib/command/utils';
+import { handleSelect, handleShowSelect } from '@/lib/command/utils';
 import { cn } from '@/lib/utils';
 
 function ShowPage() {
   const { inputValue, setInputValue } = useCommand();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const commandPath = `${pathname}/content`;
-  const commandString = 'show';
+  const commandPath = `${pathname}/show`;
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -42,7 +41,7 @@ function ShowPage() {
               <Command.Item
                 key={item.title}
                 className="flex cursor-pointer flex-row items-center justify-start rounded-lg p-3 data-[selected=true]:bg-primary-foreground"
-                onSelect={() => handleSelect(router, commandPath, searchParams, commandString, item.title)}
+                onSelect={() => handleShowSelect(router, commandPath, searchParams, item.url)}
               >
 
                 <Icon className="mr-3 size-5" />

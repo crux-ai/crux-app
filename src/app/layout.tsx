@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import React from 'react';
 
 import { ThemeProvider } from '@/components/layout/theme-provider';
 import { ModeToggle } from '@/components/ui/theme-toggle';
