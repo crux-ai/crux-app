@@ -60,7 +60,6 @@ export default function LoginForm({ className, ...props }: LoginFormProps) {
               autoCorrect="off"
               disabled={isSubmitting}
             />
-            {errors.email && <span className="text-destructive">{String(errors.email.message)}</span>}
           </div>
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="password">
