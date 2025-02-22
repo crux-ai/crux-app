@@ -1,15 +1,12 @@
 'use server';
 
-import { hash, verify } from '@node-rs/argon2';
-import { eq } from 'drizzle-orm';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { FieldValues } from 'react-hook-form';
 
-import { db } from '@/drizzle/db';
-import { userTable } from '@/drizzle/schema';
-import { deleteSessionTokenCookie, getCurrentSession, setSessionTokenCookie } from '@/lib/auth/cookie-exchange';
-import { createSession, generateSessionToken, invalidateSession } from '@/lib/auth/stateful-auth';
 import { SignUpFormSchema } from '@/validations/auth';
+
+import { logger } from '../logger';
 
 const loggedInLandingPage = '/dashboard';
 const failedAuthRedirectPage = '/login';
@@ -25,28 +22,27 @@ export async function createAccount(formData: FieldValues) {
   if (!validatedFields.success) {
     return { success: false, error: 'Invalid form credentials' };
   }
-  // check email isn't already in db
-
   const { email, password } = validatedFields.data;
-  const existingUser = await db.query.userTable.findFirst({
-    where: eq(userTable.email, email),
+  // Call register API
+  // If it returns 201 created then success
+  // If it doesnt then return not sucess
+  // 400 is bad request
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
   });
-  if (existingUser) {
-    return { success: false, error: 'Email user already exists' };
-  }
-  // 2. hash password
-  const hashedPassword = await hash(password);
-  // 3. create account in db
-  const userId = await db.insert(userTable).values({ email, password: hashedPassword }).returning({
-    id: userTable.id,
-  });
-  // 4. generate token, create session, give cookie
-  const token = generateSessionToken();
-  const session = await createSession(token, userId[0].id);
 
-  await setSessionTokenCookie(token, session.expiresAt);
-  // 5. redirect
-  redirect(loggedInLandingPage);
+  if (response.ok) {
+    logger.info('User registered successfully');
+    redirect(loggedInLandingPage);
+  } else {
+    logger.error('Error registering user:', response.json);
+    return { success: false, error: 'Unsuccessful registration' };
+  }
 }
 
 export async function signIn(formData: FieldValues) {
@@ -59,54 +55,164 @@ export async function signIn(formData: FieldValues) {
     return { success: false, error: 'Invalid form credentials' };
   }
   const { email, password } = validatedFields.data;
-  // 2. Authenticate Email and password - check db for email user and check password is right
-  const userResult = await db.query.userTable.findFirst({
-    where: eq(userTable.email, email),
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+    credentials: 'include',
   });
 
-  if (!userResult) {
-    return { success: false, error: 'Incorrect email or password' };
-  }
+  if (response.ok) {
+    logger.info('Logged in successfully', response);
+    const setCookieHeader = response.headers.get('Set-Cookie');
+    if (setCookieHeader) {
+      const [cookieValue, ...optionValues] = setCookieHeader.split(';');
+      const [cookieName, token] = cookieValue.split('=');
 
-  const correctPassword = await verify(userResult.password, password);
+      const options: {
+        domain?: string;
+        path?: string;
+        expires?: Date;
+        maxAge?: number;
+        secure?: boolean;
+        httpOnly?: boolean;
+        sameSite?: 'strict' | 'lax' | 'none';
+      } = {};
 
-  if (!correctPassword) {
-    return { success: false, error: 'Incorrect email or password' };
-  }
-  // 2. Check they have no session already
-  const { session } = await getCurrentSession();
+      optionValues.forEach((option) => {
+        const [key, value] = option.trim().split('=');
+        const keyLower = key.toLowerCase();
 
-  if (session !== null) {
+        switch (keyLower) {
+          case 'domain':
+            options.domain = value;
+            break;
+          case 'path':
+            options.path = value;
+            break;
+          case 'expires':
+            options.expires = new Date(value);
+            break;
+          case 'max-age':
+            options.maxAge = Number.parseInt(value);
+            break;
+          case 'secure':
+            options.secure = true;
+            break;
+          case 'httponly':
+            options.httpOnly = true;
+            break;
+          case 'samesite':
+            options.sameSite = value.toLowerCase() as 'strict' | 'lax' | 'none';
+            break;
+        }
+      });
+
+      cookies().set(cookieName, token, options);
+    }
+
     redirect(loggedInLandingPage);
-  };
-  // 3. Create Session
-  const token = generateSessionToken();
-  const createdSession = await createSession(token, userResult.id);
-  await setSessionTokenCookie(token, createdSession.expiresAt);
-  // 4. Redirect
-  redirect(loggedInLandingPage);
+  } else {
+    logger.error('Error logging in user:', response.json);
+    return { success: false, error: 'Unsuccessful login' };
+  }
 }
 
 export async function logout() {
-  const { session } = await getCurrentSession();
-  if (session) {
-    await invalidateSession(session.id);
-  };
-  await deleteSessionTokenCookie();
-  redirect(logOutLandingPage);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (response.ok) {
+    const setCookieHeader = response.headers.get('Set-Cookie');
+    if (setCookieHeader) {
+      const [cookieValue, ...optionValues] = setCookieHeader.split(';');
+      const [cookieName, token] = cookieValue.split('=');
+
+      const options: {
+        domain?: string;
+        path?: string;
+        expires?: Date;
+        maxAge?: number;
+        secure?: boolean;
+        httpOnly?: boolean;
+        sameSite?: 'strict' | 'lax' | 'none';
+      } = {};
+
+      optionValues.forEach((option) => {
+        const [key, value] = option.trim().split('=');
+        const keyLower = key.toLowerCase();
+
+        switch (keyLower) {
+          case 'domain':
+            options.domain = value;
+            break;
+          case 'path':
+            options.path = value;
+            break;
+          case 'expires':
+            options.expires = new Date(value);
+            break;
+          case 'max-age':
+            options.maxAge = Number.parseInt(value);
+            break;
+          case 'secure':
+            options.secure = true;
+            break;
+          case 'httponly':
+            options.httpOnly = true;
+            break;
+          case 'samesite':
+            options.sameSite = value.toLowerCase() as 'strict' | 'lax' | 'none';
+            break;
+        }
+      });
+
+      cookies().set(cookieName, token, options);
+    }
+    logger.info('succesfully logged out');
+    redirect(logOutLandingPage);
+  } else {
+    logger.error('Error logging in user:', response.json);
+    return { success: false, error: 'Unsuccessful login' };
+  }
 }
 
 export async function authenticatePage(redirectTo: string = failedAuthRedirectPage) {
-  const authResult = await getCurrentSession();
-  if (authResult.session) {
+  const cookieStore = cookies();
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/session/status`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Cookie': cookieStore.toString(),
+    },
+  });
+
+  if (response.ok) {
+    logger.info('Session successfully verified');
     return;
   }
+  logger.info('Invalid session');
   redirect(redirectTo);
 }
 
 export async function skipAuthentication(redirectTo: string = loggedInLandingPage) {
-  const authResult = await getCurrentSession();
-  if (authResult.session) {
+  const cookieStore = cookies();
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/session/status`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Cookie': cookieStore.toString(),
+    },
+  });
+  if (response.ok) {
     redirect(redirectTo);
   }
+  logger.info('Session successfully verified, and auth skipped');
 }

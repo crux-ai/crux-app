@@ -25,9 +25,9 @@ export default function LoginForm({ className, ...props }: LoginFormProps) {
     try {
       // if successful it will redirect
       // work out where to put reset
-      const { success, error } = await signIn(formData);
-      if (!success) {
-        toast.error(error);
+      const result = await signIn(formData);
+      if (result && !result.success) {
+        toast.error(result.error);
         return;
       }
     } catch {
@@ -60,7 +60,6 @@ export default function LoginForm({ className, ...props }: LoginFormProps) {
               autoCorrect="off"
               disabled={isSubmitting}
             />
-            {errors.email && <span className="text-destructive">{String(errors.email.message)}</span>}
           </div>
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="password">
