@@ -113,7 +113,7 @@ export default function Contact() {
   const showForm = methods.formState.isSubmitSuccessful;
   return (
     <section
-      className="mb-28 mt-4 scroll-mt-28 px-4 md:mb-[100rem] md:w-[38rem] lg:w-[48rem]"
+      className="mb-28 mt-4 scroll-mt-28 px-4 md:mb-10 md:w-[38rem] lg:w-[48rem]"
       id="contact"
       ref={ref}
     >

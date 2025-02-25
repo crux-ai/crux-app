@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Crux App
+
+Crux App is a Next.js project designed for modern web applications, utilizing various libraries and tools to enhance development and user experience.
 
 ## Getting Started
 
-First, run the development server:
+To get started with Crux App, follow these steps:
+
+### Prerequisites
+
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### Installation
+
+Clone the repository and install the dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd crux-app
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running the Development Server
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To start the development server, use the following command:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application in action.
 
-To learn more about Next.js, take a look at the following resources:
+## Folder Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The folder structure of the Crux App is organized as follows:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+crux-app/
+├── .github/workflows/      # CI/CD workflows
+│   ├── CI.yml
+│   ├── release.yml
+│   └── update-deps.yml
+├── src/                    # Source code
+│   ├── app/               # App pages and routing
+│   ├── components/        # Reusable UI components
+│   ├── context/          # React context providers
+│   ├── lib/              # Utilities and helpers
+│   ├── lotties/          # Lottie animation files
+│   ├── styles/           # Global styles
+│   ├── tests/            # Test files
+│   └── validations/      # Form and data validations
+├── public/               # Static assets
+└── pre-commit/          # Pre-commit hooks
+```
 
-## Deploy on Vercel
+## Relevant Config Files
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+├── .husky/               # Git hooks configuration
+├── .next/                # Next.js build output
+├── .vscode/             # VS Code settings
+├── .env.local           # Local environment variables
+├── .eslintrc.json       # ESLint configuration
+├── .gitignore           # Git ignore rules
+├── codecov.yml          # Codecov configuration
+├── commitlint.config.ts # Commit message linting
+├── eslint.config.mjs    # ESLint module config
+├── lint-staged.config.js # Lint-staged configuration
+├── next.config.mjs      # Next.js configuration
+├── postcss.config.mjs   # PostCSS configuration
+├── tailwind.config.ts   # Tailwind CSS configuration
+├── tsconfig.json        # TypeScript configuration
+├── tsconfig.tsbuildinfo # TypeScript build info
+├── vitest-setup.ts      # Vitest test setup
+└── vitest.config.mts    # Vitest configuration
+```
+Feel free to explore and modify these configurations to suit your development needs.

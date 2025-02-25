@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
-import { ModeToggle } from '@/components/ui/theme-toggle';
+import { Button } from '@/components/ui/button';
 import { useActiveSection } from '@/context/use-active-section';
 import { links } from '@/lib/data';
 
@@ -13,7 +13,7 @@ export default function Header() {
   const { activeSection, setActiveSection, setTimeOfLastClick } = useActiveSection();
 
   return (
-    <header className="z-[999]  flex items-center justify-center py-20 sm:py-36">
+    <header className=" z-[999] flex items-center justify-center py-20 sm:py-36">
       <div className="fixed left-4 top-0  hidden duration-500 animate-in slide-in-from-top sm:right-8 sm:top-6 md:block">
         <h1 className=" text-2xl font-semibold lg:text-6xl">
           <span className="text-black dark:text-white">Crux</span>
@@ -51,8 +51,14 @@ export default function Header() {
           </ul>
         </nav>
       </div>
-      <div className="fixed  right-4 top-0 mt-1  hidden duration-500 animate-in slide-in-from-top sm:right-8 sm:top-6 md:block">
-        <ModeToggle />
+      <div className=" fixed  right-2 top-0 mt-1 hidden duration-500 animate-in slide-in-from-top sm:right-2 sm:top-6 md:block">
+
+        <Button className="">
+          <Link href="/login">
+            Login
+          </Link>
+        </Button>
+
       </div>
     </header>
   );

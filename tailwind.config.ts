@@ -52,24 +52,57 @@ export default {
           4: 'hsl(var(--chart-4))',
           5: 'hsl(var(--chart-5))',
         },
+        sparkle: {
+          DEFAULT: 'hsl(var(--sparkle))',
+          foreground: 'hsl(var(--sparkle)',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--sparkle)',
+        },
+
       },
       animation: {
         background: 'background 2s ease-in-out infinite',
         linear: 'backgroundLinear 3s linear infinite',
         slide: 'backgroundSlide 120s linear infinite alternate-reverse forwards;',
+        tilt: 'tilt 10s infinite linear',
       },
       keyframes: {
         background: {
-          '0%, 100%': { backgroundPosition: 'left 0% bottom 0%' },
-          '50%': { backgroundPosition: 'left 200% bottom 0%' },
+          '0%, 100%': {
+            backgroundPosition: 'left 0% bottom 0%',
+          },
+          '50%': {
+            backgroundPosition: 'left 200% bottom 0%',
+          },
         },
         backgroundLinear: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '100%': { backgroundPosition: '200% 50%' },
+          '0%': {
+            backgroundPosition: '0% 50%',
+          },
+          '100%': {
+            backgroundPosition: '200% 50%',
+          },
         },
         backgroundSlide: {
-          '0%': { backgroundPosition: '0 0%' },
-          '100%': { backgroundPosition: '100% 50%' },
+          '0%': {
+            backgroundPosition: '0 0%',
+          },
+          '100%': {
+            backgroundPosition: '100% 50%',
+          },
+        },
+        tilt: {
+          '0%, 50%, 100%': {
+            transform: 'rotate(0deg)',
+          },
+          '25%': {
+            transform: 'rotate(0.5deg)',
+          },
+          '75%': {
+            transform: 'rotate(-0.5deg)',
+          },
         },
       },
     },

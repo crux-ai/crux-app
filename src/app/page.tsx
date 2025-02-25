@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Footer from '@/components/layout/footer';
 import About from '@/components/pages/home/about';
 import Contact from '@/components/pages/home/contact';
 import Features from '@/components/pages/home/features';
@@ -29,6 +30,7 @@ export default function Home() {
           <Timeline data={timelineData} />
           <SectionDivider />
           <Contact />
+          <Footer />
         </ActiveSectionContextProvider>
       </main>
     </>
