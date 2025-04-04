@@ -28,7 +28,7 @@ export function CommitTable() {
   const { commitData, setCommitData, setFileData, ownerRepo } = useGitShow();
   const handleSync = async () => {
     setIsLoading(true);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
+    const response = await fetch(`/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
     if (!response.ok) {
       throw new Error('Failed to fetch commits');
     }
