@@ -4,7 +4,7 @@ import type { FileItem } from '@/components/pages/dashboard/show/file-explorer';
 import type { SectionName } from '@/context/active-section';
 import type { pagesType } from '@/context/command';
 import type { MenuOption, OwnerRepo } from '@/context/git-show';
-import type { AllCommits } from '@/lib/git/fetchers';
+import type { CommitData, LanguageFreqData } from '@/validations/github';
 
 type CommandContextType = {
   pages: pagesType | never[] ;
@@ -33,10 +33,12 @@ type GitShowContextType = {
   setMenuOption: React.Dispatch<React.SetStateAction<MenuOption>>;
   ownerRepo: OwnerRepo;
   setOwnerRepo: React.Dispatch<React.SetStateAction<OwnerRepo>>;
-  commitData: AllCommits;
-  setCommitData: React.Dispatch<React.SetStateAction<AllCommits>>;
+  commitData: CommitData;
+  setCommitData: React.Dispatch<React.SetStateAction<CommitData>>;
   fileData: FileItem[];
   setFileData: React.Dispatch<React.SetStateAction<FileItem[]>>;
+  langFreqData: LanguageFreqData;
+  setLangFreqData: React.Dispatch<React.SetStateAction<LanguageFreqData>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };

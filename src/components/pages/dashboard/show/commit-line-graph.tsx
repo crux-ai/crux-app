@@ -23,7 +23,7 @@ import { customDateFormatter, type Frequencies, groupByDate } from '@/lib/git/tr
 
 const chartConfig = {
   views: {
-    label: 'Page Views',
+    label: 'Commits',
   },
   commits: {
     label: 'Commits',
@@ -36,8 +36,8 @@ export function CommitLineGraph() {
   const [frequency, setFrequency] = useState<Frequencies>('d');
 
   const chartData = useMemo(() => {
-    const uniqueCommits = Array.from(new Map(commitData?.map(item => [item.sha, item])).values());
-    const unique = uniqueCommits.map(item => ({ sha: item.sha, date: item.commit?.author?.date ?? null }));
+    const uniqueCommits = Array.from(new Map(commitData?.map(item => [item.commit_sha, item])).values());
+    const unique = uniqueCommits.map(item => ({ sha: item.commit_sha, date: item.committed_at ?? null }));
     const groupedCommits = groupByDate(unique, frequency);
     return groupedCommits;
   }, [commitData, frequency]);

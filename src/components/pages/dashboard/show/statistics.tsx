@@ -1,8 +1,9 @@
 'use client';
 
 import { CommitLineGraph } from '@/components/pages/dashboard/show/commit-line-graph';
-import LanguagePie from '@/components/pages/dashboard/show/language-pie';
-import { TopAuthorBars } from '@/components/pages/dashboard/show/top-author-bars';
+
+import LanguagePie from './language-pie';
+import { TopAuthorBars } from './top-author-bars';
 
 export function Statistics() {
   return (
