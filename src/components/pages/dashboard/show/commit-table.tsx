@@ -2,61 +2,51 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import type { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getCommits } from '@/lib/git/fetchers';
-import type { GitCommitSchema } from '@/validations/github';
+import { useGitShow } from '@/context/use-git-show';
+import { type CommitSchema, ShowSchema } from '@/validations/github';
 
 const columns: ColumnDef<GitCommit>[] = [
-  { id: 'sha', accessorKey: 'sha', header: 'Sha' },
-  { id: 'message', accessorKey: 'commit.message', header: 'Message' },
+  { id: 'id', accessorKey: 'id', header: 'ID' },
+  { id: 'branch', accessorKey: 'branch_name', header: 'Branch' },
+  { id: 'author', accessorKey: 'author_name', header: 'Author' },
+  { id: 'message', accessorKey: 'message', header: 'Message' },
+  { id: 'sha', accessorKey: 'commit_sha', header: 'Sha' },
+  { id: 'date', accessorKey: 'commited_at', header: 'Date' },
 ];
 
-type GitCommit = z.infer< typeof GitCommitSchema>;
+type GitCommit = z.infer< typeof CommitSchema>;
 
 export function CommitTable() {
   const [failedLoad, setFailedLoad] = useState(false);
-  const [tableData, setTableData] = useState<GitCommit[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const owner = searchParams.get('owner');
-  const repo = searchParams.get('repo');
-  const branch = searchParams.get('branch');
+  const [isLoading, setIsLoading] = useState(false);
+  const { commitData, setCommitData, setFileData, ownerRepo } = useGitShow();
   const handleSync = async () => {
     setIsLoading(true);
-    const { data, message } = await getCommits(owner, repo, branch);
-    if (data) {
-      setTableData(data);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch commits');
+    }
+    const showData = await response.json(); // validate
+    const validatedShowResult = ShowSchema.safeParse(showData);
+    if (validatedShowResult.success) {
+      setCommitData(validatedShowResult.data.commits);
+      setFileData(validatedShowResult.data.trees);
       setIsLoading(false);
       return;
     }
-    toast.error(message);
+    toast.error('Sync Failed');
     setFailedLoad(true);
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    const handleLoad = async () => {
-      const { data, message } = await getCommits(owner, repo, branch);
-      if (data) {
-        setTableData(data);
-        setIsLoading(false);
-        return;
-      }
-      toast.error(message);
-      setFailedLoad(true);
-      setIsLoading(false);
-    };
-    handleLoad();
-  }, [owner, repo, branch]);
-
   const table = useReactTable({
-    data: tableData,
+    data: commitData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

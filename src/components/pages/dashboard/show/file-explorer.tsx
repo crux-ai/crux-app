@@ -9,31 +9,31 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useGitShow } from '@/context/use-git-show';
-import type { TreeItemSchema } from '@/validations/github';
+import type { TreeSchema } from '@/validations/github';
 
-export type FileItem = z.infer<typeof TreeItemSchema>;
+export type FileItem = z.infer<typeof TreeSchema>;
 
 export function FileExplorer() {
   // Define some states, and that
   const { fileData } = useGitShow();
   const [currentPath, setCurrentPath] = useState<FileItem[]>([]);
-  const [visibleData, setVisibleData] = useState<FileItem[]>(fileData.filter(item => item.parent_id === null));
+  const [visibleData, setVisibleData] = useState<FileItem[]>(fileData.filter(item => item.parent_sha === ''));
 
   // define OnClick
   function handleFolderClick(folderItem: FileItem) {
-    const folderId = folderItem.sha;
+    const folderSha = folderItem.file_sha;
     setCurrentPath([...currentPath, folderItem]);
-    setVisibleData(fileData.filter(item => item.parent_id === folderId));
+    setVisibleData(fileData.filter(item => item.parent_sha === folderSha));
   }
 
   function handleBreadcrumbClick(index: number | null, folderItem: FileItem | null) {
     if (index === null || folderItem === null) {
       setCurrentPath([]);
-      setVisibleData(fileData.filter(item => item.parent_id === null));
+      setVisibleData(fileData.filter(item => item.parent_sha === ''));
     } else {
-      const folderId = folderItem.sha;
+      const folderSha = folderItem.file_sha;
       setCurrentPath(currentPath.slice(0, index + 1));
-      setVisibleData(fileData.filter(item => item.parent_id === folderId));
+      setVisibleData(fileData.filter(item => item.parent_sha === folderSha));
     }
   }
 
@@ -97,7 +97,7 @@ export function FileExplorer() {
             </BreadcrumbLink>
           </BreadcrumbItem>
           {currentPath.map((folderItem, indx) => (
-            <BreadcrumbItem key={folderItem.sha}>
+            <BreadcrumbItem key={folderItem.file_sha}>
               <BreadcrumbSeparator>
                 {' '}
                 <Slash />

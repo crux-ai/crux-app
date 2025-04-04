@@ -20,31 +20,37 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { useGitShow } from '@/context/use-git-show';
-import { languages } from '@/lib/git/languages';
-import { getLanguageFreq } from '@/lib/git/transformations';
 
 export default function LanguagePie() {
-  const { fileData } = useGitShow();
+  const { langFreqData } = useGitShow();
   const languageData = useMemo(() => {
-    const languageFrequency = getLanguageFreq(fileData, languages).filter(lang => lang.language !== null);
-    const languageFill = languageFrequency.map(lang => ({ ...lang, fill: `var(--color-${lang.language.replaceAll(' ', '')})` }));
-    return languageFill.slice(0, 7); // TODO: make it top 5 with rest as 'other'
-  }, [fileData]);
+    const topN = 5;
+    langFreqData.sort((a, b) => b.count - a.count);
+    const languageFrequency = langFreqData.filter(lang => lang.extension !== null);
+    const languageFill = languageFrequency.map(lang => ({ ...lang, fill: `var(--color-${lang.extension.replaceAll('.', '')})` }));
+    const otherLangsCount = [...languageFill.slice(topN + 1), ...languageFill.slice(0, topN).filter(lang => lang.extension === '')].reduce((acc, curr) => acc + curr.count, 0);
+    const topLangs = languageFill.slice(0, topN).filter(lang => lang.extension !== '');
+
+    topLangs.push({ fill: 'var(--color-Other', extension: 'Other', count: otherLangsCount });
+    return topLangs;
+  }, [langFreqData]);
 
   const totalFiles = useMemo(() => {
-    return languageData.reduce((acc, curr) => acc + curr.frequency, 0);
+    return langFreqData.reduce((acc, curr) => acc + curr.count, 0);
+  }, [langFreqData]);
+
+  const chartConfig = useMemo(() => {
+    return {
+      frequency: {
+        label: 'count',
+      },
+      ...languageData.reduce((acc, curr, index) => {
+        acc[curr.extension.replaceAll('.', '')] = { label: curr.extension, color: `hsl(var(--chart-${index + 1}))` };
+        return acc;
+      }, {} as Record<string, { label: string; color: string }>),
+
+    } satisfies ChartConfig;
   }, [languageData]);
-
-  const chartConfig = {
-    frequency: {
-      label: 'Count',
-    },
-    ...languageData.reduce((acc, curr, index) => {
-      acc[curr.language.replaceAll(' ', '')] = { label: curr.language, color: `hsl(var(--chart-${index + 1}))` };
-      return acc;
-    }, {} as Record<string, { label: string; color: string }>),
-
-  } satisfies ChartConfig;
 
   return (
     <Card className="flex flex-col">
@@ -64,8 +70,8 @@ export default function LanguagePie() {
             />
             <Pie
               data={languageData}
-              dataKey="frequency"
-              nameKey="language"
+              dataKey="count"
+              nameKey="extension"
               innerRadius={60}
               strokeWidth={2}
             >
