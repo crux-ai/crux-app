@@ -90,10 +90,8 @@ export default function ShowCard({ className, ...props }: CardProps) {
 
   useEffect(() => {
     const handleLoad = async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
+      const response = await fetch(`/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
       if (!response.ok) {
-        // eslint-disable-next-line no-console
-        console.log(`${process.env.NEXT_PUBLIC_APP_URL}`);
         toast.error('An error occured loading your data');
         throw new Error('Failed to fetch commits');
       }
