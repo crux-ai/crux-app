@@ -1,8 +1,8 @@
 'use client';
 import React, { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 import { FileExplorer } from '@/components/pages/dashboard/show/file-explorer';
-import { GitGraph } from '@/components/pages/dashboard/show/git-graph';
 import RhsPanel from '@/components/pages/dashboard/show/rhs-panel';
 import { Statistics } from '@/components/pages/dashboard/show/statistics';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,10 @@ import {
 } from '@/components/ui/card';
 import type { MenuOption } from '@/context/git-show';
 import { useGitShow } from '@/context/use-git-show';
-import { getAllCommits, getTreeRecursive } from '@/lib/git/fetchers';
-import { addParentIdAndNameFromPath } from '@/lib/git/transformations';
 import { cn } from '@/lib/utils';
+import { ShowSchema } from '@/validations/github';
+
+import { CommitTable } from './commit-table';
 
 type CardProps = React.ComponentProps<typeof Card>;
 
@@ -30,7 +31,7 @@ function MainContent() {
     );
   }
   if (menuOption === 'Commit History') {
-    return <GitGraph />;
+    return <CommitTable />;
   }
   if (menuOption === 'Statistics') {
     return <div className="size-full"><Statistics /></div>;
@@ -84,15 +85,25 @@ const menuOptions: { title: MenuOption; isNew: boolean }[] = [
 
 export default function ShowCard({ className, ...props }: CardProps) {
   //  const [ownerRepo, setOwnerRepo] = useState({ owner: 'jack-cordery', repo: 'dashboard' });
-  const { ownerRepo, setCommitData, setMenuOption, loading, setLoading, setFileData } = useGitShow();
+  const { ownerRepo, setCommitData, setMenuOption, loading, setLoading, setFileData, setLangFreqData } = useGitShow();
   // Lets load the data on load of ShowCard, so that we don't have to fetch data for every screen!
 
   useEffect(() => {
     const handleLoad = async () => {
-      const { data } = await getAllCommits(ownerRepo.owner, ownerRepo.repo);
-      const { data: fileData } = await getTreeRecursive(ownerRepo.owner, ownerRepo.repo, ownerRepo.branch);
-      setCommitData(data || []);
-      setFileData(addParentIdAndNameFromPath(fileData || []));
+      const response = await fetch(`/api/github/show/${ownerRepo.owner}/${ownerRepo.repo}/${ownerRepo.branch}`);
+      if (!response.ok) {
+        toast.error('An error occured loading your data');
+        throw new Error('Failed to fetch commits');
+      }
+      const showData = await response.json(); // validate
+      const validatedShowResult = ShowSchema.safeParse(showData);
+      if (validatedShowResult.success) {
+        setCommitData(validatedShowResult.data.commits);
+        setFileData(validatedShowResult.data.trees);
+        setLangFreqData(validatedShowResult.data.languages);
+      } else {
+        toast.error('An error occured loading your data');
+      }
       const currentHash = window.location.hash.substring(1);
       if (['File Explorer', 'Commit History', 'Statistics', 'Mind Map'].includes(currentHash)) {
         setMenuOption(currentHash as MenuOption);
@@ -100,7 +111,7 @@ export default function ShowCard({ className, ...props }: CardProps) {
       setLoading(false);
     };
     handleLoad();
-  }, [ownerRepo, setFileData, setLoading, setCommitData, setMenuOption]);
+  }, [ownerRepo, setFileData, setLoading, setCommitData, setLangFreqData, setMenuOption]);
 
   return (
     <div className="mt-10 flex flex-row gap-2 px-2">

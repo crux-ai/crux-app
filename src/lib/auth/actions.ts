@@ -27,7 +27,7 @@ export async function createAccount(formData: FieldValues) {
   // If it returns 201 created then success
   // If it doesnt then return not sucess
   // 400 is bad request
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/register`, {
+  const response = await fetch(`${process.env.APP_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -56,7 +56,7 @@ export async function signIn(formData: FieldValues) {
   }
   const { email, password } = validatedFields.data;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/login`, {
+  const response = await fetch(`${process.env.APP_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -123,7 +123,7 @@ export async function signIn(formData: FieldValues) {
 }
 
 export async function logout() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/logout`, {
+  const response = await fetch(`${process.env.APP_URL}/api/auth/logout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -186,7 +186,7 @@ export async function logout() {
 export async function authenticatePage(redirectTo: string = failedAuthRedirectPage) {
   const cookieStore = cookies();
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/session/status`, {
+  const response = await fetch(`${process.env.APP_URL}/api/auth/session/status`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ export async function authenticatePage(redirectTo: string = failedAuthRedirectPa
 
 export async function skipAuthentication(redirectTo: string = loggedInLandingPage) {
   const cookieStore = cookies();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/session/status`, {
+  const response = await fetch(`${process.env.APP_URL}/api/auth/session/status`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

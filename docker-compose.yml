@@ -1,0 +1,19 @@
+services:
+  app:
+    container_name: crux-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crux-app
+    ports:
+      - 3000:3000
+    environment:
+      AUTH_URL: 'http://crux-api:8001'
+      APP_URL: 'http://localhost:3000'
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true
+    name: crux-service_go-network

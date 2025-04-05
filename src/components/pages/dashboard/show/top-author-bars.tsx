@@ -106,7 +106,7 @@ export function TopAuthorBars() {
               <LabelList
                 dataKey="author"
                 position="insideLeft"
-                offset={24}
+                offset={38}
                 className="fill-[--color-label]"
                 fontSize={12}
               />

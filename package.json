@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "compose": "docker compose --env-file .env.local up --build",
     "dev:next": "next dev",
     "dev": "run-p dev:*",
     "build": "next build",
